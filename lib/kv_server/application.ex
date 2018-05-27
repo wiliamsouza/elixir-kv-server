@@ -7,8 +7,12 @@ defmodule KVServer.Application do
 
   def start(_type, _args) do
     # List all child processes to be supervised
+    port =
+      String.to_integer(System.get_env("PORT") || raise("missing $PORT environment variable"))
+
     children = [
-      {Task, fn -> KVServer.accept(4040) end}
+      {Task.Supervisor, name: KVServer.TaskSupervisor},
+      {Task, fn -> KVServer.accept(port) end}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
